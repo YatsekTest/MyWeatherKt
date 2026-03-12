@@ -70,4 +70,26 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             )
         }
     }
+
+    fun loadWeatherByCoords(lat: Double, lon: Double) {
+        _uiState.value = WeatherUiState.Loading
+        _forecastUiState.value = ForecastUiState.Loading
+        viewModelScope.launch {
+            val weatherDeferred = async {
+                runCatching { repository.getWeatherByCoords(lat, lon, BuildConfig.WEATHER_API_KEY) }
+            }
+            val forecastDeferred = async {
+                runCatching { repository.getForecastByCoords(lat, lon, BuildConfig.WEATHER_API_KEY) }
+            }
+
+            weatherDeferred.await().fold(
+                onSuccess = { _uiState.value = WeatherUiState.Success(it) },
+                onFailure = { _uiState.value = WeatherUiState.Error(it.message ?: "Unknown error") }
+            )
+            forecastDeferred.await().fold(
+                onSuccess = { _forecastUiState.value = ForecastUiState.Success(it) },
+                onFailure = { _forecastUiState.value = ForecastUiState.Error(it.message ?: "Unknown error") }
+            )
+        }
+    }
 }

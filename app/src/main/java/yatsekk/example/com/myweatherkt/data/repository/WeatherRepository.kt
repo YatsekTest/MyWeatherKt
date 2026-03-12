@@ -14,4 +14,12 @@ class WeatherRepository {
     suspend fun getForecast(city: String, apiKey: String): ForecastDto {
         return apiService.getForecast(city = city, apiKey = apiKey)
     }
+
+    suspend fun getWeatherByCoords(lat: Double, lon: Double, apiKey: String): WeatherDto {
+        return apiService.getCurrentWeatherByCoords(lat = lat, lon = lon, apiKey = apiKey)
+    }
+
+    suspend fun getForecastByCoords(lat: Double, lon: Double, apiKey: String): ForecastDto {
+        return apiService.getForecastByCoords(lat = lat, lon = lon, apiKey = apiKey)
+    }
 }
