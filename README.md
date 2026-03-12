@@ -5,9 +5,10 @@ A weather application for Android — a Kotlin + Jetpack Compose + MVVM rewrite 
 ## Features
 
 - **Current weather** — search by city name, displays temperature, description, min temperature, humidity, pressure, and wind speed.
-- **24h forecast** — hourly forecast list (static demo data, matching original app behaviour).
-- **Week forecast** — placeholder screen (matching original app structure).
-- **Bottom navigation** — three tabs mirroring the original app.
+- **Hourly forecast** — up to 40 forecast entries (3-hour intervals, 5-day window) from the OpenWeatherMap forecast API, showing time, temperature, weather condition, and wind speed.
+- **Daily forecast** — 5-day forecast grouped by day, showing min/max temperatures, dominant weather condition, and average wind speed.
+- **Location-based weather** — on first launch requests location permission and automatically loads weather for the device's current GPS coordinates.
+- **Bottom navigation** — three tabs: current weather, hourly forecast, daily forecast.
 - **City persistence** — the last searched city is saved and pre-filled on next launch (SharedPreferences).
 
 ## Tech stack
@@ -80,7 +81,8 @@ app/src/main/
 │   │   ├── api/
 │   │   │   ├── ApiService.kt          # Retrofit interface
 │   │   │   ├── RetrofitClient.kt      # Retrofit singleton
-│   │   │   └── model/WeatherDto.kt    # API response models
+│   │   │   ├── model/WeatherDto.kt    # Current weather response models
+│   │   │   └── model/ForecastDto.kt   # Forecast response models
 │   │   └── repository/
 │   │       └── WeatherRepository.kt   # Data source abstraction
 │   ├── ui/
