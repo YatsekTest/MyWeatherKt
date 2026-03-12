@@ -1,6 +1,7 @@
 package yatsekk.example.com.myweatherkt.data.repository
 
 import yatsekk.example.com.myweatherkt.data.api.RetrofitClient
+import yatsekk.example.com.myweatherkt.data.api.model.ForecastDto
 import yatsekk.example.com.myweatherkt.data.api.model.WeatherDto
 
 class WeatherRepository {
@@ -8,5 +9,9 @@ class WeatherRepository {
 
     suspend fun getWeather(city: String, apiKey: String): WeatherDto {
         return apiService.getCurrentWeather(city = city, apiKey = apiKey)
+    }
+
+    suspend fun getForecast(city: String, apiKey: String): ForecastDto {
+        return apiService.getForecast(city = city, apiKey = apiKey)
     }
 }
