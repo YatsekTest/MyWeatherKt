@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">MyWeather</string>
+
+    <!-- Navigation tabs -->
+    <string name="tab_current">Current</string>
+    <string name="tab_hourly">24h Forecast</string>
+    <string name="tab_daily">Week Forecast</string>
+
+    <!-- Current weather screen -->
+    <string name="hint_city">Enter city name</string>
+    <string name="search">Search</string>
+    <string name="enter_city_prompt">Enter a city name and press search</string>
+    <string name="error_loading_data">Failed to load weather data. Check city name and API key.</string>
+    <string name="city_from_cache">Loading saved city…</string>
+
+    <!-- Weather detail labels -->
+    <string name="label_min_temp">Min temperature</string>
+    <string name="label_humidity">Humidity</string>
+    <string name="label_pressure">Pressure</string>
+    <string name="label_wind">Wind</string>
+
+    <!-- Daily screen placeholder -->
+    <string name="coming_soon">Coming soon…</string>
+</resources>

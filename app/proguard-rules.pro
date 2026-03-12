@@ -1,0 +1,3 @@
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class yatsekk.example.com.myweatherkt.data.api.model.** { *; }

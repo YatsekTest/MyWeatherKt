@@ -1,0 +1,9 @@
+# Copy this file to local.properties and fill in your values.
+# local.properties is excluded from version control.
+
+# OpenWeatherMap API key
+# Get yours at: https://openweathermap.org/api
+WEATHER_API_KEY=your_openweathermap_api_key_here
+
+# Android SDK path (set automatically by Android Studio)
+# sdk.dir=/path/to/android/sdk
