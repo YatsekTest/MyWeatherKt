@@ -21,4 +21,22 @@ interface ApiService {
         @Query("lang") lang: String = "en",
         @Query("units") units: String = "metric"
     ): ForecastDto
+
+    @GET("data/2.5/weather")
+    suspend fun getCurrentWeatherByCoords(
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double,
+        @Query("appid") apiKey: String,
+        @Query("lang") lang: String = "en",
+        @Query("units") units: String = "metric"
+    ): WeatherDto
+
+    @GET("data/2.5/forecast")
+    suspend fun getForecastByCoords(
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double,
+        @Query("appid") apiKey: String,
+        @Query("lang") lang: String = "en",
+        @Query("units") units: String = "metric"
+    ): ForecastDto
 }
