@@ -1,6 +1,7 @@
 package yatsekk.example.com.myweatherkt.ui.screen
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,14 +10,26 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import yatsekk.example.com.myweatherkt.R
+import yatsekk.example.com.myweatherkt.data.api.model.ForecastDto
+import yatsekk.example.com.myweatherkt.ui.viewmodel.ForecastUiState
+import yatsekk.example.com.myweatherkt.ui.viewmodel.WeatherViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import kotlin.math.roundToInt
 
 data class HourlyWeatherItem(
     val hour: String,
@@ -26,8 +39,45 @@ data class HourlyWeatherItem(
 )
 
 @Composable
-fun HourlyWeatherScreen(modifier: Modifier = Modifier) {
-    val items = remember { buildStaticHourlyData() }
+fun HourlyWeatherScreen(
+    modifier: Modifier = Modifier,
+    viewModel: WeatherViewModel = viewModel()
+) {
+    val forecastState by viewModel.forecastUiState.collectAsState()
+
+    when (val state = forecastState) {
+        is ForecastUiState.Idle -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    text = stringResource(R.string.enter_city_prompt),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        is ForecastUiState.Loading -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
+        is ForecastUiState.Success -> {
+            HourlyWeatherList(modifier = modifier, forecast = state.forecast)
+        }
+        is ForecastUiState.Error -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    text = stringResource(R.string.error_loading_data),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun HourlyWeatherList(modifier: Modifier = Modifier, forecast: ForecastDto) {
+    val items = buildHourlyItems(forecast)
 
     LazyColumn(
         modifier = modifier
@@ -81,24 +131,14 @@ private fun HourlyWeatherCard(item: HourlyWeatherItem) {
     }
 }
 
-private fun buildStaticHourlyData(): List<HourlyWeatherItem> = listOf(
-    HourlyWeatherItem("22:00", 9, "Cloudy", "Wind: 5 m/s"),
-    HourlyWeatherItem("23:00", 8, "Cloudy", "Wind: 5 m/s"),
-    HourlyWeatherItem("00:00", 8, "Cloudy", "Wind: 4 m/s"),
-    HourlyWeatherItem("01:00", 7, "Cloudy", "Wind: 4 m/s"),
-    HourlyWeatherItem("02:00", 6, "Cloudy", "Wind: 3 m/s"),
-    HourlyWeatherItem("03:00", 6, "Cloudy", "Wind: 3 m/s"),
-    HourlyWeatherItem("04:00", 6, "Cloudy", "Wind: 2 m/s"),
-    HourlyWeatherItem("05:00", 5, "Cloudy", "Wind: 0 m/s"),
-    HourlyWeatherItem("06:00", 5, "Cloudy", "Wind: 0 m/s"),
-    HourlyWeatherItem("07:00", 5, "Cloudy", "Wind: 1 m/s"),
-    HourlyWeatherItem("08:00", 5, "Cloudy", "Wind: 1 m/s"),
-    HourlyWeatherItem("09:00", 6, "Cloudy", "Wind: 2 m/s"),
-    HourlyWeatherItem("10:00", 5, "Cloudy with light rain", "Wind: 2 m/s"),
-    HourlyWeatherItem("11:00", 5, "Cloudy with light rain", "Wind: 3 m/s"),
-    HourlyWeatherItem("12:00", 5, "Cloudy with light rain", "Wind: 3 m/s"),
-    HourlyWeatherItem("13:00", 5, "Cloudy with light rain", "Wind: 4 m/s"),
-    HourlyWeatherItem("14:00", 5, "Cloudy with light rain", "Wind: 4 m/s"),
-    HourlyWeatherItem("15:00", 5, "Cloudy with light rain", "Wind: 5 m/s"),
-    HourlyWeatherItem("16:00", 5, "Partly cloudy with light drizzle", "Wind: 6 m/s")
-)
+private fun buildHourlyItems(forecast: ForecastDto): List<HourlyWeatherItem> {
+    val hourFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    return forecast.list.map { item ->
+        val hour = hourFormat.format(Date(item.dt * 1000L))
+        val temp = item.main.temp.roundToInt()
+        val condition = item.weather.firstOrNull()?.description
+            ?.replaceFirstChar { it.uppercase() } ?: ""
+        val wind = "Wind: ${item.wind.speed} m/s"
+        HourlyWeatherItem(hour = hour, temp = temp, condition = condition, wind = wind)
+    }
+}

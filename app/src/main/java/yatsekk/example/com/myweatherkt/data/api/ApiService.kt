@@ -2,6 +2,7 @@ package yatsekk.example.com.myweatherkt.data.api
 
 import retrofit2.http.GET
 import retrofit2.http.Query
+import yatsekk.example.com.myweatherkt.data.api.model.ForecastDto
 import yatsekk.example.com.myweatherkt.data.api.model.WeatherDto
 
 interface ApiService {
@@ -12,4 +13,12 @@ interface ApiService {
         @Query("lang") lang: String = "en",
         @Query("units") units: String = "metric"
     ): WeatherDto
+
+    @GET("data/2.5/forecast")
+    suspend fun getForecast(
+        @Query("q") city: String,
+        @Query("appid") apiKey: String,
+        @Query("lang") lang: String = "en",
+        @Query("units") units: String = "metric"
+    ): ForecastDto
 }
